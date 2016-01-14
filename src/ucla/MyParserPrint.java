@@ -23,7 +23,7 @@
  * useful.
  */
 
-package edu.ucla.cs.cs144;
+package ucla;
 
 import java.io.*;
 import java.text.*;
