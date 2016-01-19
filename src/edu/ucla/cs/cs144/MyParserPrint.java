@@ -23,7 +23,7 @@
  * useful.
  */
 
-package ucla;
+package edu.ucla.cs.cs144;
 
 import java.io.*;
 import java.text.*;
@@ -41,7 +41,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
 
 
-class MyParser {
+class MyParserPrint {
     
     static final String columnSeparator = "|*|";
     static DocumentBuilder builder;
@@ -184,10 +184,35 @@ class MyParser {
             methods). */
         
         
-        
         /**************************************************************/
         
+        recursiveDescent(doc, 0);
     }
+    
+    public static void recursiveDescent(Node n, int level) {
+        // adjust indentation according to level
+        for(int i=0; i<4*level; i++)
+            System.out.print(" ");
+        
+        // dump out node name, type, and value  
+        String ntype = typeName[n.getNodeType()];
+        String nname = n.getNodeName();
+        String nvalue = n.getNodeValue();
+        
+        System.out.println("Type = " + ntype + ", Name = " + nname + ", Value = " + nvalue);
+        
+        // dump out attributes if any
+        org.w3c.dom.NamedNodeMap nattrib = n.getAttributes();
+        if(nattrib != null && nattrib.getLength() > 0)
+            for(int i=0; i<nattrib.getLength(); i++)
+                recursiveDescent(nattrib.item(i),  level+1);
+        
+        // now walk through its children list
+        org.w3c.dom.NodeList nlist = n.getChildNodes();
+        
+        for(int i=0; i<nlist.getLength(); i++)
+            recursiveDescent(nlist.item(i), level+1);
+    }  
     
     public static void main (String[] args) {
         if (args.length == 0) {
