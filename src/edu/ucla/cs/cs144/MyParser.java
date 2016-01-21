@@ -28,7 +28,6 @@ package edu.ucla.cs.cs144;
 import java.io.*;
 import java.text.*;
 import java.util.*;
-import java.sql.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
@@ -183,10 +182,8 @@ class MyParser {
         
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
-        /*
-        Statement items = Connection.createStatement();
-        ResultSet rs = items.executeQuery("");//Query here
-        */
+        
+        
         /**************************************************************/
         
     }
