@@ -40,12 +40,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
 
+import java.lang.Object;
+
 
 class MyParser {
     
     static final String columnSeparator = "|*|";
     static DocumentBuilder builder;
-    
+    static BufferedWriter userWriter;
+    static BufferedWriter itemWriter;
+    static BufferedWriter categoryWriter;
+    static BufferedWriter bidWriter;
     static final String[] typeName = {
 	"none",
 	"Element",
@@ -183,11 +188,84 @@ class MyParser {
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
         
+        Element[] elements = getElementsByTagNameNR(doc.getDocumentElement(), "Item");
+        
+        for(int i = 0; i < elements.length; i++)
+        {
+            parseUser(elements[i]);
+            parseItem(elements[i]);
+            parseCategory(elements[i]);
+            parseBid(elements[i]);
+        }
+        
         
         /**************************************************************/
         
     }
     
+    public static void parseUser(Element element)
+    {
+        String userID = getElementByTagNameNR(element, "Seller").getAttribute("UserID");
+        String country = getElementText(getElementByTagNameNR(element, "Country"));
+        String address = getElementText(getElementByTagNameNR(element, "Location"));
+        String sellerRating = getElementByTagNameNR(element, "Seller").getAttribute("Rating");
+        parseWriter(userWriter, userID, country, address, sellerRating);
+    }
+    
+    public static void parseItem(Element element)
+    {
+        String itemID = element.getAttribute("ItemID");
+        String userID = getElementByTagNameNR(element, "Seller").getAttribute("UserID");
+        String itemName = getElementTextByTagNameNR(element, "Name");
+        String firstBid = strip(getElementTextByTagNameNR(element, "First_Bid"));
+        String buyPrice = strip(getElementTextByTagNameNR(element, "Buy_Price"));
+        String currentHighestBid = strip(getElementTextByTagNameNR(element, "Currently"));
+        String startTime = stringToTimestamp(getElementTextByTagNameNR(element, "Started"));
+        String endTime = stringToTimestamp(getElementTextByTagNameNR(element, "Ends"));
+        String numberOfBids = getElementTextByTagNameNR(element, "Number_of_Bids");
+        String description = getElementTextByTagNameNR(element, "Description");
+        description = description.substring(0, 4000);
+        parseWriter(itemWriter, itemID, userID, itemName, firstBid, buyPrice, currentHighestBid, startTime, endTime, numberOfBids, description);
+    }
+    
+    public static String stringToTimestamp(String date)
+    {
+        SimpleDateFormat format_in = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
+        SimpleDateFormat format_out = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StringBuffer buffer = new StringBuffer();
+        Date parsedDate = format_in.parse(date);
+        return "" + format_out.format(parsedDate);
+    }
+    
+    public static void parseCategory(Element element)
+    {
+        String itemID = "";
+        String category = "";
+        parseWriter(categoryWriter, itemID, category);
+    }
+
+    public static void parseBid(Element element)
+    {
+        string userID = "";
+        string itemID = "";
+        string bidTime = "";
+        string amount = "";
+        parseWriter(bidWriter, userID, itemID, bidTime, amount);
+    }
+    
+    public static void parseWriter(BufferedWriter writer, String... args)
+    {
+        string parseString = "";
+        for(int i = 0; i < args.length - 1; i++)
+        {
+            parseString += args[i] + columnSeparator;
+        }
+        parseString += input[i];
+        
+        writer.write(parseString);
+        output.NewLine();
+    }
+       
     public static void main (String[] args) {
         if (args.length == 0) {
             System.out.println("Usage: java MyParser [file] [file] ...");
@@ -211,10 +289,19 @@ class MyParser {
             System.exit(2);
         }
         
+        
+        userWriter = new BufferedWriter(new FileWriter("users.dat", true));
+        itemWriter = new BufferedWriter(new FileWriter("items.dat", true));
+        categoryWriter = new BufferedWriter(new FileWriter("categories.dat", true));
+        bidWriter = new BufferedWriter(new FileWriter("bids.dat", true));
         /* Process all files listed on command line. */
         for (int i = 0; i < args.length; i++) {
             File currentFile = new File(args[i]);
             processFile(currentFile);
         }
+        userWriter.close();
+        itemWriter.close();
+        categoryWriter.close();
+        bidWriter.close();
     }
 }
