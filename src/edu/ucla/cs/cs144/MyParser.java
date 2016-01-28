@@ -165,7 +165,7 @@ class MyParser {
     
     /* Process one items-???.xml file.
      */
-    static void processFile(File xmlFile) {
+    static void processFile(File xmlFile)  throws IOException {
         Document doc = null;
         try {
             doc = builder.parse(xmlFile);
@@ -203,7 +203,7 @@ class MyParser {
         
     }
     
-    public static void parseUser(Element element)
+    public static void parseUser(Element element) throws IOException
     {
         String userID = getElementByTagNameNR(element, "Seller").getAttribute("UserID");
         String country = getElementText(getElementByTagNameNR(element, "Country"));
@@ -212,7 +212,7 @@ class MyParser {
         parseWriter(userWriter, userID, country, address, sellerRating);
     }
     
-    public static void parseItem(Element element)
+    public static void parseItem(Element element) throws IOException
     {
         String itemID = element.getAttribute("ItemID");
         String userID = getElementByTagNameNR(element, "Seller").getAttribute("UserID");
@@ -224,49 +224,56 @@ class MyParser {
         String endTime = stringToTimestamp(getElementTextByTagNameNR(element, "Ends"));
         String numberOfBids = getElementTextByTagNameNR(element, "Number_of_Bids");
         String description = getElementTextByTagNameNR(element, "Description");
+        if(description.length() > 4000)
         description = description.substring(0, 4000);
         parseWriter(itemWriter, itemID, userID, itemName, firstBid, buyPrice, currentHighestBid, startTime, endTime, numberOfBids, description);
     }
     
-    public static String stringToTimestamp(String date)
+    public static String stringToTimestamp(String date) throws IOException
     {
         SimpleDateFormat format_in = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
         SimpleDateFormat format_out = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        StringBuffer buffer = new StringBuffer();
-        Date parsedDate = format_in.parse(date);
-        return "" + format_out.format(parsedDate);
+        try
+        {
+            Date parsedDate = format_in.parse(date);
+            return "" + format_out.format(parsedDate);
+        }
+        catch(ParseException pe) {
+            System.err.println("Parse error");
+            return "Parse Error";
+        }
     }
     
-    public static void parseCategory(Element element)
+    public static void parseCategory(Element element) throws IOException
     {
         String itemID = "";
         String category = "";
         parseWriter(categoryWriter, itemID, category);
     }
 
-    public static void parseBid(Element element)
+    public static void parseBid(Element element) throws IOException
     {
-        string userID = "";
-        string itemID = "";
-        string bidTime = "";
-        string amount = "";
+        String userID = "";
+        String itemID = "";
+        String bidTime = "";
+        String amount = "";
         parseWriter(bidWriter, userID, itemID, bidTime, amount);
     }
     
-    public static void parseWriter(BufferedWriter writer, String... args)
+    public static void parseWriter(BufferedWriter writer, String... args) throws IOException
     {
-        string parseString = "";
+        String parseString = "";
         for(int i = 0; i < args.length - 1; i++)
         {
             parseString += args[i] + columnSeparator;
         }
-        parseString += input[i];
+        parseString += args[args.length - 1];
         
         writer.write(parseString);
-        output.NewLine();
+        writer.newLine();
     }
        
-    public static void main (String[] args) {
+    public static void main (String[] args) throws IOException {
         if (args.length == 0) {
             System.out.println("Usage: java MyParser [file] [file] ...");
             System.exit(1);
