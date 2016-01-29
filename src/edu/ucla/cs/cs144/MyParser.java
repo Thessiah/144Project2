@@ -246,18 +246,31 @@ class MyParser {
     
     public static void parseCategory(Element element) throws IOException
     {
-        String itemID = "";
+        String itemID = element.getAttribute("ItemID");
         String category = "";
-        parseWriter(categoryWriter, itemID, category);
+        Element[] categories = getElementsByTagNameNR(element, "Category");
+        for(int i = 0; i < categories.length; i++)
+        {
+            category = getElementText(categories[i]);
+            parseWriter(categoryWriter, itemID, category);
+        }
     }
 
     public static void parseBid(Element element) throws IOException
     {
+        String itemID = element.getAttribute("ItemID");
         String userID = "";
-        String itemID = "";
         String bidTime = "";
         String amount = "";
-        parseWriter(bidWriter, userID, itemID, bidTime, amount);
+        Element[] bids = getElementsByTagNameNR(getElementByTagNameNR(element, "Bids"), "Bid");
+        
+        for(int i = 0; i < bids.length; i++)
+        {
+                userID = getElementByTagNameNR(bids[i], "Bidder").getAttribute("UserID");
+                bidTime = "" + stringToTimestamp(getElementTextByTagNameNR(bids[i], "Time"));
+                amount = strip(getElementTextByTagNameNR(bids[i], "Amount"));
+                parseWriter(bidWriter, userID, itemID, bidTime, amount);
+        }
     }
     
     public static void parseWriter(BufferedWriter writer, String... args) throws IOException
@@ -297,10 +310,10 @@ class MyParser {
         }
         
         
-        userWriter = new BufferedWriter(new FileWriter("users.dat", true));
-        itemWriter = new BufferedWriter(new FileWriter("items.dat", true));
-        categoryWriter = new BufferedWriter(new FileWriter("categories.dat", true));
-        bidWriter = new BufferedWriter(new FileWriter("bids.dat", true));
+        userWriter = new BufferedWriter(new FileWriter("rawUsers.dat", true));
+        itemWriter = new BufferedWriter(new FileWriter("rawItems.dat", true));
+        categoryWriter = new BufferedWriter(new FileWriter("rawCategories.dat", true));
+        bidWriter = new BufferedWriter(new FileWriter("rawBids.dat", true));
         /* Process all files listed on command line. */
         for (int i = 0; i < args.length; i++) {
             File currentFile = new File(args[i]);

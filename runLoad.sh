@@ -11,5 +11,12 @@ mysql CS144 < create.sql
 ant
 ant run-all
 
+sort -u rawUsers.dat > users.dat
+sort -u rawItems.dat > items.dat
+sort -u rawCategories.dat > categories.dat
+sort -u rawBids.dat > bids.dat
+
 # Run the load.sql batch file to load the data
 mysql CS144 < load.sql
+# mysql CS144 < queries.sql
+rm *.dat
