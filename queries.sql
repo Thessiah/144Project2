@@ -1,7 +1,6 @@
 SELECT COUNT(*)
 FROM Users;
 
-/*Find the number of items in "New York", (i.e., items whose location is exactly the string "New York"). Pay special attention to case sensitivity. You should match the items in "New York" but not in "new york".*/
 SELECT COUNT(*)
 FROM Items
 WHERE UserID IN (SELECT UserID
@@ -28,10 +27,11 @@ WHERE UserID in (SELECT UserID
 SELECT Count(*)
 FROM Users
 WHERE UserID IN (SELECT UserID
-                 FROM Items) AND UserID IN (SELECT UserID FROM Bids)
+                 FROM Items) AND UserID IN (SELECT UserID FROM Bids);
 
 SELECT Count(DISTINCT Category)
 FROM ItemCategory
 WHERE ItemID IN (SELECT ItemID
 	FROM Bids
-	WHERE Amount > 100)
+	WHERE Amount > 100);
+

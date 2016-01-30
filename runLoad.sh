@@ -18,5 +18,5 @@ sort -u rawBids.dat > bids.dat
 
 # Run the load.sql batch file to load the data
 mysql CS144 < load.sql
-mysql CS144 < queries.sql
 rm *.dat
+mysql CS144 < queries.sql

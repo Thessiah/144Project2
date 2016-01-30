@@ -192,10 +192,7 @@ class MyParser {
         
         for(int i = 0; i < elements.length; i++)
         {
-            parseUser(elements[i]);
-            parseItem(elements[i]);
-            parseCategory(elements[i]);
-            parseBid(elements[i]);
+            parse(elements[i]);
         }
         
         
@@ -203,23 +200,15 @@ class MyParser {
         
     }
     
-    public static void parseUser(Element element) throws IOException
+    public static void parse(Element element) throws IOException
     {
         String userID = getElementByTagNameNR(element, "Seller").getAttribute("UserID");
         String country = getElementText(getElementByTagNameNR(element, "Country"));
         String address = getElementText(getElementByTagNameNR(element, "Location"));
         String sellerRating = getElementByTagNameNR(element, "Seller").getAttribute("Rating");
-        if(country == null)
-        country = "";
-        if(address == null)
-        address = "";
         parseWriter(userWriter, userID, country, address, sellerRating);
-    }
-    
-    public static void parseItem(Element element) throws IOException
-    {
+        
         String itemID = element.getAttribute("ItemID");
-        String userID = getElementByTagNameNR(element, "Seller").getAttribute("UserID");
         String itemName = getElementTextByTagNameNR(element, "Name");
         String firstBid = strip(getElementTextByTagNameNR(element, "First_Bid"));
         String buyPrice = strip(getElementTextByTagNameNR(element, "Buy_Price"));
@@ -231,6 +220,32 @@ class MyParser {
         if(description.length() > 4000)
         description = description.substring(0, 4000);
         parseWriter(itemWriter, itemID, userID, itemName, firstBid, buyPrice, currentHighestBid, startTime, endTime, numberOfBids, description);
+        
+        String category = "";
+        Element[] categories = getElementsByTagNameNR(element, "Category");
+        for(int i = 0; i < categories.length; i++)
+        {
+            category = getElementText(categories[i]);
+            parseWriter(categoryWriter, itemID, category);
+        }
+       
+        String bidTime = "";
+        String amount = "";
+        
+        Element[] bids = getElementsByTagNameNR(getElementByTagNameNR(element, "Bids"), "Bid");
+        
+        for(int i = 0; i < bids.length; i++)
+        {
+                userID = getElementByTagNameNR(bids[i], "Bidder").getAttribute("UserID");
+                bidTime = "" + stringToTimestamp(getElementTextByTagNameNR(bids[i], "Time"));
+                amount = strip(getElementTextByTagNameNR(bids[i], "Amount"));
+                parseWriter(bidWriter, userID, itemID, bidTime, amount);
+                
+                country = getElementTextByTagNameNR(getElementByTagNameNR(bids[i], "Bidder"), "Country");
+                address = getElementTextByTagNameNR(getElementByTagNameNR(bids[i], "Bidder"), "Address");
+                sellerRating = getElementByTagNameNR(bids[i], "Bidder").getAttribute("Rating");
+                parseWriter(userWriter, userID, country, address, sellerRating);
+        }
     }
     
     public static String stringToTimestamp(String date) throws IOException
@@ -245,49 +260,6 @@ class MyParser {
         catch(ParseException pe) {
             System.err.println("Parse error");
             return "Parse Error";
-        }
-    }
-    
-    public static void parseCategory(Element element) throws IOException
-    {
-        String itemID = element.getAttribute("ItemID");
-        String category = "";
-        Element[] categories = getElementsByTagNameNR(element, "Category");
-        for(int i = 0; i < categories.length; i++)
-        {
-            category = getElementText(categories[i]);
-            parseWriter(categoryWriter, itemID, category);
-        }
-    }
-
-    public static void parseBid(Element element) throws IOException
-    {
-        String itemID = element.getAttribute("ItemID");
-        String userID = "";
-        String bidTime = "";
-        String amount = "";
-        
-        String country = "";
-        String address = "";
-        String sellerRating = "";
-        
-        Element[] bids = getElementsByTagNameNR(getElementByTagNameNR(element, "Bids"), "Bid");
-        
-        for(int i = 0; i < bids.length; i++)
-        {
-                userID = getElementByTagNameNR(bids[i], "Bidder").getAttribute("UserID");
-                bidTime = "" + stringToTimestamp(getElementTextByTagNameNR(bids[i], "Time"));
-                amount = strip(getElementTextByTagNameNR(bids[i], "Amount"));
-                parseWriter(bidWriter, userID, itemID, bidTime, amount);
-                
-                country = getElementTextByTagNameNR(getElementByTagNameNR(bids[i], "Bidder"), "Country");
-                address = getElementTextByTagNameNR(getElementByTagNameNR(bids[i], "Bidder"), "Address");
-                sellerRating = getElementByTagNameNR(bids[i], "Bidder").getAttribute("Rating");
-                if(country == null)
-                country = "";
-                if(address == null)
-                address = "";
-                parseWriter(userWriter, userID, country, address, sellerRating);
         }
     }
     
