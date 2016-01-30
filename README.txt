@@ -2,11 +2,11 @@
 Users: {{UserID}, country, location, bidder-rating, seller-rating}
 Items: {{ItemID}, UserID, name, first bid, buy price, number of bids, started, ends, description}
 ItemCategory: {ItemID, Category}
-ItemStarted: {ItemID, Started}
-ItemEnds: {ItemID, Ends}
 Bids: {UserID, ItemID, Time, Amount}
 
-2.
+{} indicates a key
 
-3.
-4.
+2. Aside from those that include keys, there are no dependencies between tables.
+
+3.Yes
+4.Yes
