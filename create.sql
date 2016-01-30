@@ -1,22 +1,22 @@
 CREATE TABLE Users
 (
-	UserID VARCHAR(20) PRIMARY KEY, 
-	Country VARCHAR(20), 
-	Address VARCHAR(50), 
+	UserID VARCHAR(20) PRIMARY KEY,
+	Country VARCHAR(20),
+	Address VARCHAR(50),
 	SellerRating INT
 );
 
 CREATE TABLE Items
 (
-	ItemID BIGINT PRIMARY KEY, 
-	UserID VARCHAR(20), 
-	ItemName VARCHAR(50), 
-	FirstBid DECIMAL(8,2), 
+	ItemID BIGINT PRIMARY KEY,
+	UserID VARCHAR(20),
+	ItemName VARCHAR(50),
+	FirstBid DECIMAL(8,2),
 	BuyPrice DECIMAL(8,2),
 	CurrentHighestBid DECIMAL(8,2),
 	StartTime TIMESTAMP,
 	EndTime TIMESTAMP,
-	NumberOfBids INT, 
+	NumberOfBids INT,
 	Description VARCHAR(4000)
 );
 
@@ -28,8 +28,8 @@ CREATE TABLE ItemCategory
 
 CREATE TABLE Bids
 (
-	UserID BIGINT,
-	ItemID BIGINT, 
-	BidTime TIMESTAMP, 
+	UserID VARCHAR(20),
+	ItemID BIGINT,
+	BidTime TIMESTAMP,
 	Amount DECIMAL(8,2)
 );
