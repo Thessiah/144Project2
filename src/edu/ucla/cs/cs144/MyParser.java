@@ -209,6 +209,10 @@ class MyParser {
         String country = getElementText(getElementByTagNameNR(element, "Country"));
         String address = getElementText(getElementByTagNameNR(element, "Location"));
         String sellerRating = getElementByTagNameNR(element, "Seller").getAttribute("Rating");
+        if(country == null)
+        country = "";
+        if(address == null)
+        address = "";
         parseWriter(userWriter, userID, country, address, sellerRating);
     }
     
@@ -262,6 +266,11 @@ class MyParser {
         String userID = "";
         String bidTime = "";
         String amount = "";
+        
+        String country = "";
+        String address = "";
+        String sellerRating = "";
+        
         Element[] bids = getElementsByTagNameNR(getElementByTagNameNR(element, "Bids"), "Bid");
         
         for(int i = 0; i < bids.length; i++)
@@ -270,6 +279,15 @@ class MyParser {
                 bidTime = "" + stringToTimestamp(getElementTextByTagNameNR(bids[i], "Time"));
                 amount = strip(getElementTextByTagNameNR(bids[i], "Amount"));
                 parseWriter(bidWriter, userID, itemID, bidTime, amount);
+                
+                country = getElementTextByTagNameNR(getElementByTagNameNR(bids[i], "Bidder"), "Country");
+                address = getElementTextByTagNameNR(getElementByTagNameNR(bids[i], "Bidder"), "Address");
+                sellerRating = getElementByTagNameNR(bids[i], "Bidder").getAttribute("Rating");
+                if(country == null)
+                country = "";
+                if(address == null)
+                address = "";
+                parseWriter(userWriter, userID, country, address, sellerRating);
         }
     }
     
@@ -281,7 +299,6 @@ class MyParser {
             parseString += args[i] + columnSeparator;
         }
         parseString += args[args.length - 1];
-        
         writer.write(parseString);
         writer.newLine();
     }
